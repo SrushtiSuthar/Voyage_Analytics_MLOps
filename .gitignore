@@ -1,0 +1,32 @@
+# Data
+data/raw/*.csv
+data/processed/*
+data/features/*
+
+# Models
+models/*.pkl
+models/scalers/*
+models/encoders/*
+
+# MLflow
+mlflow/*
+.DS_Store
+
+# Environment
+__pycache__/
+*.pyc
+.env
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.ipynb_checkpoints/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+logs/*
+
