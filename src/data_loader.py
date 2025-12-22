@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 # Base paths 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath("C:/Users/srush/Desktop/00_Labmentix/14_Voyayge_ML/Voyaye_Analytic/src/data_loader.py")))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath("C:/Users/srush/Desktop/00_Labmentix/14_Voyage_ML/Voyage_Analytics/src/data_loader.py")))
 DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
 
 # Load raw data from the path in directory
@@ -46,3 +46,6 @@ def join_hotels_users(hotels: pd.DataFrame, users: pd.DataFrame) -> pd.DataFrame
         how="left",
         suffixes=("", "_user"),
     )
+
+
+print(DATA_DIR)
