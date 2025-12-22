@@ -1,0 +1,5 @@
+outs:
+- md5: 1aae67a4db2fd4771cc0028216c87ec7
+  size: 2465308
+  hash: md5
+  path: hotels.csv
