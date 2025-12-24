@@ -52,7 +52,7 @@ def convert_dates(df: pd.DataFrame, date_cols) -> pd.DataFrame:
     return df
 
 def wrangle_flights(df: pd.DataFrame) -> pd.DataFrame:
-    # Clean and standardize flights table, Returns a new wrangled DataFrame, original is untouched.
+    # Clean and standardize flights table, returns a new wrangled DataFrame, original is untouched.
     
     df = wrangle(df)               # work on a copy
     df = drop_null_values(df)
@@ -75,5 +75,49 @@ def wrangle_flights(df: pd.DataFrame) -> pd.DataFrame:
     df = convert_dates(df, ["date"])
 
     return df
+
+def wrangle_hotels(df: pd.DataFrame) -> pd.DataFrame:
+    # Clean and standardize hotels table, returns a new wrangled DataFrame, original is untouched.
+    
+    df = wrangle(df)              
+    df = drop_null_values(df)
+    df = drop_duplicates(df)
+    df = standardize_column_names(df)
+    df = strip_whitespace(df)
+
+    dtype_map = {
+        "travelCode"    : "int64",  
+        "userCode"      : "int64", 
+        "name"          : "string",
+        "place"         : "string", 
+        "days"          : "int64",  
+        "price"         : "float64",
+        "total"         : "float64"
+        }
+    df = enforce_dtypes(df, dtype_map)
+    df = convert_dates(df, ["date"])
+
+    return df
+
+def wrangle_users(df: pd.DataFrame) -> pd.DataFrame:
+    # Clean and standardize users table, returns a new wrangled DataFrame, original is untouched.
+    
+    df = wrangle(df)              
+    df = drop_null_values(df)
+    df = drop_duplicates(df)
+    df = standardize_column_names(df)
+    df = strip_whitespace(df)
+
+    dtype_map = {
+        "code"      : "int64", 
+        "company"   : "object",
+        "name"      :  "object",
+        "gender"    :  "object",
+        "age"       :  "int64", 
+        }
+    df = enforce_dtypes(df, dtype_map)
+
+    return df
+
 
     
