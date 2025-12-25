@@ -57,7 +57,6 @@ def wrangle_flights(df: pd.DataFrame) -> pd.DataFrame:
     df = wrangle(df)               # work on a copy
     df = drop_null_values(df)
     df = drop_duplicates(df)
-    df = standardize_column_names(df)
     df = strip_whitespace(df)
 
     dtype_map = {
@@ -73,6 +72,7 @@ def wrangle_flights(df: pd.DataFrame) -> pd.DataFrame:
         }
     df = enforce_dtypes(df, dtype_map)
     df = convert_dates(df, ["date"])
+    df = standardize_column_names(df)
 
     return df
 
@@ -82,7 +82,6 @@ def wrangle_hotels(df: pd.DataFrame) -> pd.DataFrame:
     df = wrangle(df)              
     df = drop_null_values(df)
     df = drop_duplicates(df)
-    df = standardize_column_names(df)
     df = strip_whitespace(df)
 
     dtype_map = {
@@ -96,6 +95,7 @@ def wrangle_hotels(df: pd.DataFrame) -> pd.DataFrame:
         }
     df = enforce_dtypes(df, dtype_map)
     df = convert_dates(df, ["date"])
+    df = standardize_column_names(df)
 
     return df
 
@@ -105,17 +105,17 @@ def wrangle_users(df: pd.DataFrame) -> pd.DataFrame:
     df = wrangle(df)              
     df = drop_null_values(df)
     df = drop_duplicates(df)
-    df = standardize_column_names(df)
     df = strip_whitespace(df)
 
     dtype_map = {
         "code"      : "int64", 
-        "company"   : "object",
-        "name"      :  "object",
-        "gender"    :  "object",
-        "age"       :  "int64", 
+        "company"   : "string",
+        "name"      : "string",
+        "gender"    : "string",
+        "age"       : "int64", 
         }
     df = enforce_dtypes(df, dtype_map)
+    df = standardize_column_names(df)
 
     return df
 
