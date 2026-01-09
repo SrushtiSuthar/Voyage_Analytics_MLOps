@@ -1,0 +1,82 @@
+# Imports
+from pathlib import Path
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler, PowerTransformer
+
+# Making a working copy for peprocessing and feature engineering
+def preprocess(df: pd.DataFrame) -> pd.DataFrame:
+    # making a temporary file to work on data wrangling
+    df = df.copy()  
+    return df
+
+# Cleaning outliers
+def cap_outliers(df: pd.DataFrame, cols: list, q: float = 0.99) -> pd.DataFrame:
+    # Cap numeric columns at given upper quantile.
+    df = df.copy()
+    for c in cols:
+        if c in df.columns:
+            upper = df[c].quantile(q)
+            df[c] = np.where(df[c] > upper, upper, df[c])
+    return df
+
+# Encoding columns
+def col_encode(df, label_cols, onehot_cols, encoders=None):
+    df = df.copy()
+    encoders = {} if encoders is None else encoders
+
+    for col in label_cols:
+        if col in df:
+            le = LabelEncoder()
+            df[col] = df[col].astype(str)
+            df[f"{col}_enc"] = le.fit_transform(df[col])
+            encoders[col] = {"type": "label", "encoder": le}
+
+    for col in onehot_cols:
+        if col in df:
+            ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
+            arr = ohe.fit_transform(df[[col]])
+            ohe_df = pd.DataFrame(arr, index=df.index,
+                                  columns=[f"{col}_{v}" for v in ohe.categories_[0]])
+            df = pd.concat([df.drop(columns=col), ohe_df], axis=1)
+            encoders[col] = {"type": "onehot", "encoder": ohe}
+
+    return df, encoders
+
+# Transforming columns, based on skewness
+def col_transform(df, cols, skew_threshold=0.75, fitted_power=None):
+    df = df.copy()
+    skew_vals = df[cols].skew()
+
+    log_cols, power_cols = {}, []
+
+    for col in cols:
+        s = skew_vals.get(col, 0)
+        if s > skew_threshold:
+            shift = max(0, -df[col].min() + 1e-6)
+            df[f"{col}_log"] = np.log1p(df[col] + shift)
+            log_cols[col] = True
+        elif s < -skew_threshold:
+            power_cols.append(col)
+
+    pt = fitted_power
+    if power_cols:
+        if pt is None:
+            pt = PowerTransformer(method="yeo-johnson", standardize=True)
+            arr = pt.fit_transform(df[power_cols])
+        else:
+            arr = pt.transform(df[power_cols])
+
+        for i, col in enumerate(power_cols):
+            df[f"{col}_pow"] = arr[:, i]
+
+    return df, log_cols, pt
+
+# Scaling the data
+def col_scaling(df: pd.DataFrame, num_cols: list, scaler: StandardScaler | None = None) -> Tuple[pd.DataFrame, StandardScaler]:
+    df = df.copy()
+    scaler = scaler or StandardScaler()
+
+    df[[c + "_sc" for c in num_cols]] = scaler.fit_transform(df[num_cols].fillna(0))
+    return df, scaler
+
