@@ -80,3 +80,33 @@ def col_scaling(df: pd.DataFrame, num_cols: list, scaler: StandardScaler | None 
     df[[c + "_sc" for c in num_cols]] = scaler.fit_transform(df[num_cols].fillna(0))
     return df, scaler
 
+# flight data preprocessing
+def preprocess_flights(flights: pd.DataFrame, users: pd.DataFrame | None = None) -> pd.DataFrame:
+
+    df = preprocess(df) # copy of the data
+
+    # date handling
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df["month"] = df["date"].dt.month
+        df["weekday"] = df["date"].dt.dayofweek
+        df["is_weekend"] = (df["weekday"] >= 5).astype(int)
+        df["quarter"] = df["date"].dt.quarter
+
+    # season
+    if "month" in df.columns:
+        df["season"] = pd.cut(
+            df["month"],
+            bins=[0, 3, 6, 9, 12],
+            labels=["winter", "spring", "summer", "fall"],
+            right=False,
+        )
+
+    # route feature
+    df["route"] = df["from"] + "_" + df["to"]
+
+    # price per km derived numeric
+    df["price_per_km"] = df["price"] / (df["distance"] + 1)
+
+    return df
+    
