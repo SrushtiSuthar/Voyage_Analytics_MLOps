@@ -91,7 +91,7 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df["month"] = df["date"].dt.month
         df["weekday"] = df["date"].dt.dayofweek
-        df["is_weekend"] = (df["weekday"] >= 5).astype(int)
+        df["isweekend"] = (df["weekday"] >= 5).astype(int)
         df["quarter"] = df["date"].dt.quarter
 
     # season
@@ -107,13 +107,13 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
     df["route"] = df["from"] + "_" + df["to"]
 
     # price per km derived numeric
-    df["price_per_km"] = df["price"] / (df["distance"] + 1)
+    df["priceperkm"] = df["price"] / (df["distance"] + 1)
 
-    cols            = df.columns.tolist()
+    num_cols        = ["price", "time", "distance", "priceperkm"]"]
     label_cols      = ["flighttype"]
     onehot_cols     = ["from", "to", "agency", "season", "route"]
 
-    df = cap_outliers(df, cols)
+    df = cap_outliers(df, num_cols)
     df, encoder = col_encode(df, label_cols, onehot_cols)
     df, log_info, power_t = col_transform(df)
     df, scaler = col_scaling(df)
