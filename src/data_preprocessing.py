@@ -2,6 +2,7 @@
 from pathlib import Path
 import pandas as pd
 import numpy as np
+from typing import Tuple, Dict
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler, PowerTransformer
 
 # Making a working copy for peprocessing and feature engineering
@@ -81,7 +82,7 @@ def col_scaling(df: pd.DataFrame, num_cols: list, scaler: StandardScaler | None 
     return df, scaler
 
 # flight data preprocessing
-def preprocess_flights(flights: pd.DataFrame, users: pd.DataFrame | None = None) -> pd.DataFrame:
+def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
 
     df = preprocess(df) # copy of the data
 
