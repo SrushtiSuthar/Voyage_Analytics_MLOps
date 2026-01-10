@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 from typing import Tuple, Dict
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler, PowerTransformer
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, StandardScaler, PowerTransformer
 
 # Making a working copy for peprocessing and feature engineering
 def preprocess(df: pd.DataFrame) -> pd.DataFrame:
@@ -21,15 +21,15 @@ def cap_outliers(df: pd.DataFrame, cols: list, q: float = 0.99) -> pd.DataFrame:
     return df
 
 # Encoding columns
-def col_encode(df, label_cols, onehot_cols, encoders=None):
+def col_encode(df, ord_cols, onehot_cols, encoders=None):
     encoders = {} if encoders is None else encoders
 
-    for col in label_cols:
+    for col in ord_cols:
         if col in df:
-            le = LabelEncoder()
-            df[col] = df[col].astype(str)
-            df[f"{col}_enc"] = le.fit_transform(df[col])
-            encoders[col] = {"type": "label", "encoder": le}
+            flighttype_order = ["economic", "firstclass", "premium"]
+            oe = OrdinalEncoder(categories = [flighttype_order], handle_unknown='use_encoded_value', unknown_value=-1)
+            df[[f"{col}_enc"]] = oe.fit_transform(df[[col]].astype(str))
+            encoders[col] = {"type": "ordinal", "encoder": oe}
 
     for col in onehot_cols:
         if col in df:
@@ -40,12 +40,11 @@ def col_encode(df, label_cols, onehot_cols, encoders=None):
             df = pd.concat([df.drop(columns=col), ohe_df], axis=1)
             encoders[col] = {"type": "onehot", "encoder": ohe}
 
-    return df, encoders
+    return df
 
 # Transforming columns, based on skewness
-def col_transform(df, skew_threshold=0.75, fitted_power=None):
+def col_transform(df, cols, skew_threshold=0.75, fitted_power=None):
 
-    cols = df.columns
     skew_vals = df[cols].skew()
     log_cols, power_cols = {}, []
 
@@ -69,17 +68,16 @@ def col_transform(df, skew_threshold=0.75, fitted_power=None):
         for i, col in enumerate(power_cols):
             df[f"{col}_pow"] = arr[:, i]
 
-    return df, log_cols, pt
+    return df
 
 # Scaling the data
-def col_scaling(df: pd.DataFrame, scaler: StandardScaler | None = None) -> Tuple[pd.DataFrame, StandardScaler]:
+def col_scaling(df: pd.DataFrame, cols, scaler: StandardScaler | None = None) -> Tuple[pd.DataFrame, StandardScaler]:
     
-    cols = df.columns
     scaler = scaler or StandardScaler()
 
     df[[c + "_sc" for c in cols]] = scaler.fit_transform(df[cols].fillna(0))
 
-    return df, scaler
+    return df
 
 # flight data preprocessing
 def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
@@ -109,14 +107,15 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
     # price per km derived numeric
     df["priceperkm"] = df["price"] / (df["distance"] + 1)
 
-    num_cols        = ["price", "time", "distance", "priceperkm"]"]
-    label_cols      = ["flighttype"]
+    num_cols        = ["price", "time", "distance", "priceperkm"]
+    ord_cols        = ["flighttype"]
     onehot_cols     = ["from", "to", "agency", "season", "route"]
+    scal_cols       = ["time", "distance", "priceperkm"]
 
     df = cap_outliers(df, num_cols)
-    df, encoder = col_encode(df, label_cols, onehot_cols)
-    df, log_info, power_t = col_transform(df)
-    df, scaler = col_scaling(df)
+    df = col_encode(df, ord_cols, onehot_cols)
+    #df = col_transform(df, num_cols) #transformation not needed
+    df = col_scaling(df, scal_cols)
 
-    return  df, encoder, log_info, power_t, scaler
+    return  df 
     
