@@ -21,15 +21,15 @@ def cap_outliers(df: pd.DataFrame, cols: list, q: float = 0.99) -> pd.DataFrame:
     return df
 
 # Encoding columns
-def col_encode(df, ord_cols, onehot_cols, encoders=None):
+def col_encode(df, ord_cols=None, onehot_cols=None, categories=None, encoders=None):
     encoders = {} if encoders is None else encoders
 
-    for col in ord_cols:
-        if col in df:
-            flighttype_order = ["economic", "firstclass", "premium"]
-            oe = OrdinalEncoder(categories = [flighttype_order], handle_unknown='use_encoded_value', unknown_value=-1)
-            df[[f"{col}_enc"]] = oe.fit_transform(df[[col]].astype(str))
-            encoders[col] = {"type": "ordinal", "encoder": oe}
+    if ord_cols:
+        for col in ord_cols:
+            if col in df:
+                oe = OrdinalEncoder(categories=categories, handle_unknown='use_encoded_value', unknown_value=-1)
+                df[[f"{col}_enc"]] = oe.fit_transform(df[[col]].astype(str))
+                encoders[col] = {"type": "ordinal", "encoder": oe}
 
     for col in onehot_cols:
         if col in df:
@@ -111,11 +111,41 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
     ord_cols        = ["flighttype"]
     onehot_cols     = ["from", "to", "agency", "season", "route"]
     scal_cols       = ["time", "distance", "priceperkm"]
+    flighttype_order = ["economic", "firstclass", "premium"]
 
     df = cap_outliers(df, num_cols)
-    df = col_encode(df, ord_cols, onehot_cols)
+    df = col_encode(df, ord_cols, onehot_cols, categories=[flighttype_order])
     #df = col_transform(df, num_cols) #transformation not needed
     df = col_scaling(df, scal_cols)
 
     return  df 
     
+def preprocess_hotels(df: pd.DataFrame | None = None) -> pd.DataFrame:
+        
+    df = preprocess(df) # copy of the data
+
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df["month"] = df["date"].dt.month
+        df["weekday"] = df["date"].dt.dayofweek
+
+    # stay duration bucket
+    if "days" in df.columns:
+        df["stay_bucket"] = pd.cut(
+            df["days"],
+            bins=[0, 3, 5, 10],
+            labels=["short", "medium", "long"],
+            right=False,
+        )
+
+    num_cols = ["price", "total"]
+    ord_cols = ["stay_bucket"]
+    onehot_cols = ["name", "place"]
+    staybucket_order = ["short", "medium", "long"]
+
+    df = cap_outliers(df, num_cols)
+    df = col_encode(df, ord_cols=ord_cols, onehot_cols=onehot_cols, categories=[staybucket_order])
+    df = col_transform(df, num_cols)
+    df = col_scaling(df, num_cols)
+
+    return df
