@@ -14,7 +14,6 @@ def preprocess(df: pd.DataFrame) -> pd.DataFrame:
 # Cleaning outliers
 def cap_outliers(df: pd.DataFrame, cols: list, q: float = 0.99) -> pd.DataFrame:
     # Cap numeric columns at given upper quantile.
-    df = df.copy()
     for c in cols:
         if c in df.columns:
             upper = df[c].quantile(q)
@@ -23,7 +22,6 @@ def cap_outliers(df: pd.DataFrame, cols: list, q: float = 0.99) -> pd.DataFrame:
 
 # Encoding columns
 def col_encode(df, label_cols, onehot_cols, encoders=None):
-    df = df.copy()
     encoders = {} if encoders is None else encoders
 
     for col in label_cols:
@@ -45,10 +43,10 @@ def col_encode(df, label_cols, onehot_cols, encoders=None):
     return df, encoders
 
 # Transforming columns, based on skewness
-def col_transform(df, cols, skew_threshold=0.75, fitted_power=None):
-    df = df.copy()
-    skew_vals = df[cols].skew()
+def col_transform(df, skew_threshold=0.75, fitted_power=None):
 
+    cols = df.columns
+    skew_vals = df[cols].skew()
     log_cols, power_cols = {}, []
 
     for col in cols:
@@ -74,11 +72,13 @@ def col_transform(df, cols, skew_threshold=0.75, fitted_power=None):
     return df, log_cols, pt
 
 # Scaling the data
-def col_scaling(df: pd.DataFrame, num_cols: list, scaler: StandardScaler | None = None) -> Tuple[pd.DataFrame, StandardScaler]:
-    df = df.copy()
+def col_scaling(df: pd.DataFrame, scaler: StandardScaler | None = None) -> Tuple[pd.DataFrame, StandardScaler]:
+    
+    cols = df.columns
     scaler = scaler or StandardScaler()
 
-    df[[c + "_sc" for c in num_cols]] = scaler.fit_transform(df[num_cols].fillna(0))
+    df[[c + "_sc" for c in cols]] = scaler.fit_transform(df[cols].fillna(0))
+
     return df, scaler
 
 # flight data preprocessing
@@ -109,5 +109,14 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
     # price per km derived numeric
     df["price_per_km"] = df["price"] / (df["distance"] + 1)
 
-    return df
+    cols            = df.columns.tolist()
+    label_cols      = ["flighttype"]
+    onehot_cols     = ["from", "to", "agency", "season", "route"]
+
+    df = cap_outliers(df, cols)
+    df, encoder = col_encode(df, label_cols, onehot_cols)
+    df, log_info, power_t = col_transform(df)
+    df, scaler = col_scaling(df)
+
+    return  df, encoder, log_info, power_t, scaler
     
