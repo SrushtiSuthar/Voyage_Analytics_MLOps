@@ -24,7 +24,7 @@ def train_flight_price_model(experiment_name: str = "voyage_flight_price") -> Di
 
     # Load raw data
     print("Loading raw data...")
-    flights = load_csv(DATA_DIR / "flights_wr.csv")
+    flights = load_csv(DATA_DIR / "flights.csv")
     print(f"Flight rows loaded: {len(flights)}")
 
     # wrangling
@@ -34,7 +34,10 @@ def train_flight_price_model(experiment_name: str = "voyage_flight_price") -> Di
     # Preprocess + feature engineering
     print("Preprocessing...")
     flights_prep = preprocess_flights(flights_wrangled)
-    X, y = data_spliting(flights_prep)
+    X, y = data_spliting(flights_prep, 
+                         target_col = "price", 
+                         drop_cols = ["travelcode", "usercode", "flighttype", "time", "distance", "date", "priceperkm"]
+                         )
     print(f"Feature matrix shape: {X.shape}, Target shape: {y.shape}")
 
     # Train/test split

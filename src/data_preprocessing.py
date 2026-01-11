@@ -149,3 +149,14 @@ def preprocess_hotels(df: pd.DataFrame | None = None) -> pd.DataFrame:
     df = col_scaling(df, num_cols)
 
     return df
+
+def data_spliting(df, target_col, drop_cols=None):
+    
+    if drop_cols:
+        X = df.drop(columns=drop_cols)
+    else:
+        X = df.copy()
+
+    y = X.pop(target_col)
+
+    return X, y
