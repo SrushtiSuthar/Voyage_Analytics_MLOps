@@ -111,7 +111,7 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
     ord_cols        = ["flighttype"]
     onehot_cols     = ["from", "to", "agency", "season", "route"]
     scal_cols       = ["time", "distance", "priceperkm"]
-    flighttype_order = ["economic", "firstclass", "premium"]
+    flighttype_order = ["economic", "firstClass", "premium"]
 
     df = cap_outliers(df, num_cols)
     df = col_encode(df, ord_cols, onehot_cols, categories=[flighttype_order])
