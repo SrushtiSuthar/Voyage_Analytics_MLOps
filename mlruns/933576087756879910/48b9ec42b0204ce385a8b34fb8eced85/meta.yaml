@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/933576087756879910/48b9ec42b0204ce385a8b34fb8eced85/artifacts
+end_time: 1768186416011
+entry_point_name: ''
+experiment_id: '933576087756879910'
+lifecycle_stage: active
+run_id: 48b9ec42b0204ce385a8b34fb8eced85
+run_name: flight_ridge
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1768186380036
+status: 4
+tags: []
+user_id: srush

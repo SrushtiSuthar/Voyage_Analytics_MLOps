@@ -105,7 +105,13 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
     df["route"] = df["from"] + "_" + df["to"]
 
     # price per km derived numeric
-    df["priceperkm"] = df["price"] / (df["distance"] + 1)
+    if "price" in df.columns:
+        df["priceperkm"] = df["price"] / (df["distance"] + 1)
+    else:
+        # during prediction we don't know true price; you can either:
+        # - skip priceperkm,
+        # - or set to NaN/0 so it won't be used as a feature
+        df["priceperkm"] = np.nan
 
     num_cols        = ["price", "time", "distance", "priceperkm"]
     ord_cols        = ["flighttype"]

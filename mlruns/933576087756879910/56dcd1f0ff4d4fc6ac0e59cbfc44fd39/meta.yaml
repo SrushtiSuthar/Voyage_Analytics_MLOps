@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/933576087756879910/56dcd1f0ff4d4fc6ac0e59cbfc44fd39/artifacts
+end_time: 1768212201130
+entry_point_name: ''
+experiment_id: '933576087756879910'
+lifecycle_stage: active
+run_id: 56dcd1f0ff4d4fc6ac0e59cbfc44fd39
+run_name: flight_gradient_boosting
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1768212077028
+status: 3
+tags: []
+user_id: srush

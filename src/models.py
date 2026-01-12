@@ -1,4 +1,5 @@
 # imports
+from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
@@ -7,6 +8,10 @@ import mlflow.sklearn
 import joblib
 import numpy as np
 import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+MODELS_DIR = PROJECT_ROOT / "models"
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 class FlightPriceModel:
     # Flight price regression model manager
@@ -56,8 +61,9 @@ class FlightPriceModel:
             mlflow.log_metric("test_mae", test_mae)
 
             # Save model
-            mlflow.sklearn.log_model(model, "model")
-            joblib.dump(model, f"models/{model_name}_flight.pkl")
+            model_path = MODELS_DIR / f"{model_name}_flight.pkl"
+            joblib.dump(model, model_path)
+            print("Saved model to:", model_path)
 
             return {
                 "model": model,

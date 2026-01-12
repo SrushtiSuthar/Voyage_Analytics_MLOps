@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from typing import Dict, Any
 from src.data_wrangling import wrangle_flights
-from src.data_preprocessing import preprocess_flights, data_spliting
+from src.data_preprocessing import preprocess_flights, data_spliting_X
 
 def predict_flight_price(
     model_path: str | Path,
@@ -31,7 +31,7 @@ def predict_flight_price(
     df_prep = preprocess_flights(df_wrangle)
 
     # Build features (same logic as training)
-    X, _ = data_spliting(df_prep)
+    X, _ = data_spliting_X(df_prep)
 
     # Predict
     prediction = model.predict(X)[0]
