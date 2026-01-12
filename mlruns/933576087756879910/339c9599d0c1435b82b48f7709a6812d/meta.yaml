@@ -1,8 +1,9 @@
 artifact_uri: mlflow-artifacts:/933576087756879910/339c9599d0c1435b82b48f7709a6812d/artifacts
+deleted_time: 1768238613047
 end_time: 1768209056757
 entry_point_name: ''
 experiment_id: '933576087756879910'
-lifecycle_stage: active
+lifecycle_stage: deleted
 run_id: 339c9599d0c1435b82b48f7709a6812d
 run_name: flight_ridge
 source_name: ''

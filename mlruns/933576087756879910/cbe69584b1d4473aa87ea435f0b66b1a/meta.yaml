@@ -1,8 +1,9 @@
 artifact_uri: mlflow-artifacts:/933576087756879910/cbe69584b1d4473aa87ea435f0b66b1a/artifacts
+deleted_time: 1768238613025
 end_time: 1768209287549
 entry_point_name: ''
 experiment_id: '933576087756879910'
-lifecycle_stage: active
+lifecycle_stage: deleted
 run_id: cbe69584b1d4473aa87ea435f0b66b1a
 run_name: flight_gradient_boosting
 source_name: ''

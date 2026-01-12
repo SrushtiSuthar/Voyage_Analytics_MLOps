@@ -6,9 +6,9 @@ import mlflow
 import pandas as pd
 import numpy as np
 
-from src.data_handler import load_csv
+from src.data_handler import load_csv, save_features
 from src.data_wrangling import wrangle_flights
-from src.data_preprocessing import preprocess_flights, data_spliting
+from src.data_preprocessing import preprocess_flights, data_spliting_Xy, data_spliting_X
 from src.models import FlightPriceModel
 from sklearn.model_selection import train_test_split
 
@@ -34,11 +34,15 @@ def train_flight_price_model(experiment_name: str = "voyage_flight_price") -> Di
     # Preprocess + feature engineering
     print("Preprocessing...")
     flights_prep = preprocess_flights(flights_wrangled)
-    X, y = data_spliting(flights_prep, 
+    X, y = data_spliting_Xy(flights_prep, 
                          target_col = "price", 
-                         drop_cols = ["travelcode", "usercode", "flighttype", "time", "distance", "date", "priceperkm"]
+                         drop_cols = ["travelcode", "usercode", "flighttype", "time", "distance", "date"]
                          )
     print(f"Feature matrix shape: {X.shape}, Target shape: {y.shape}")
+
+    # save features
+    save_features(X, name="flights")
+    print("Features saved")
 
     # Train/test split
     X_train, X_test, y_train, y_test = train_test_split(

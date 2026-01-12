@@ -104,20 +104,11 @@ def preprocess_flights(df: pd.DataFrame | None = None) -> pd.DataFrame:
     # route feature
     df["route"] = df["from"] + "_" + df["to"]
 
-    # price per km derived numeric
-    if "price" in df.columns:
-        df["priceperkm"] = df["price"] / (df["distance"] + 1)
-    else:
-        # during prediction we don't know true price; you can either:
-        # - skip priceperkm,
-        # - or set to NaN/0 so it won't be used as a feature
-        df["priceperkm"] = np.nan
-
-    num_cols        = ["price", "time", "distance", "priceperkm"]
-    ord_cols        = ["flighttype"]
-    onehot_cols     = ["from", "to", "agency", "season", "route"]
-    scal_cols       = ["time", "distance", "priceperkm"]
-    flighttype_order = ["economic", "firstClass", "premium"]
+    num_cols            = ["price", "time", "distance"]
+    ord_cols            = ["flighttype"]
+    onehot_cols         = ["from", "to", "agency", "season", "route"]
+    scal_cols           = ["time", "distance"]
+    flighttype_order    = ["economic", "firstClass", "premium"]
 
     df = cap_outliers(df, num_cols)
     df = col_encode(df, ord_cols, onehot_cols, categories=[flighttype_order])
@@ -156,7 +147,7 @@ def preprocess_hotels(df: pd.DataFrame | None = None) -> pd.DataFrame:
 
     return df
 
-def data_spliting(df, target_col, drop_cols=None):
+def data_spliting_Xy(df, target_col, drop_cols=None):
     
     if drop_cols:
         X = df.drop(columns=drop_cols)
@@ -166,3 +157,10 @@ def data_spliting(df, target_col, drop_cols=None):
     y = X.pop(target_col)
 
     return X, y
+
+def data_spliting_X(df):
+    """
+    Build feature matrix X only (used during inference).
+    """
+    X = df.drop(columns=["price"], errors="ignore")
+    return X

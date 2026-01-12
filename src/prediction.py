@@ -6,6 +6,10 @@ from typing import Dict, Any
 from src.data_wrangling import wrangle_flights
 from src.data_preprocessing import preprocess_flights, data_spliting_X
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FEATURE_DIR = PROJECT_ROOT / "data" / "features"
+FEATURE_DIR.mkdir(parents=True, exist_ok=True)
+
 def predict_flight_price(
     model_path: str | Path,
     input_data: Dict[str, Any],
@@ -20,18 +24,42 @@ def predict_flight_price(
     """
 
     model = joblib.load(model_path)
+    print("Model loaded")
 
     # Create minimal DataFrame
     df_input = pd.DataFrame([input_data])
+    print("Sample input loaded")
 
     # Apply same wrangling
     df_wrangle = wrangle_flights(df_input)
+    print("Sample input wrangled")
 
     # Apply same preprocessing as training
     df_prep = preprocess_flights(df_wrangle)
+    print("Sample input preprocessed")
+    print(df_prep.columns.tolist())
 
     # Build features (same logic as training)
-    X, _ = data_spliting_X(df_prep)
+    X = data_spliting_X(df_prep)
+
+    # Load training feature columns
+    feature_cols_path = FEATURE_DIR / "flights_features.pkl"
+    X_train = joblib.load(feature_cols_path)
+    feature_cols = list(X_train.columns)
+
+    # Align columns: add missing, drop extra
+    for col in feature_cols:
+        if col not in X.columns:
+            X[col] = 0
+
+    X = X.drop(
+        columns=["travelcode", "usercode", "flighttype", "time", "distance", "date"],
+        errors="ignore"
+        )
+
+    # Reorder columns exactly as training
+    X = X[feature_cols]
+    print(X)
 
     # Predict
     prediction = model.predict(X)[0]
