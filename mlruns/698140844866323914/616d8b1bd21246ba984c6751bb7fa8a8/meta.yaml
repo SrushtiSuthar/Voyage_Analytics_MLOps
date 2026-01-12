@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/698140844866323914/616d8b1bd21246ba984c6751bb7fa8a8/artifacts
+end_time: 1768241260258
+entry_point_name: ''
+experiment_id: '698140844866323914'
+lifecycle_stage: active
+run_id: 616d8b1bd21246ba984c6751bb7fa8a8
+run_name: flight_random_forest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1768241194274
+status: 3
+tags: []
+user_id: srush

@@ -53,12 +53,21 @@ class FlightPriceModel:
 
             # Log to MLflow
             mlflow.log_param("model_type", model_name)
+            mlflow.log_param("n_estimators", model.get_params().get("n_estimators"))
+            mlflow.log_param("max_depth", model.get_params().get("max_depth"))
+            mlflow.log_param("random_state", model.get_params().get("random_state"))
+            mlflow.log_param("learning_rate", model.get_params().get("learning_rate"))
+            mlflow.log_param("alpha", model.get_params().get("alpha"))
+
             mlflow.log_metric("train_rmse", train_rmse)
             mlflow.log_metric("test_rmse", test_rmse)
             mlflow.log_metric("train_r2", train_r2)
             mlflow.log_metric("test_r2", test_r2)
             mlflow.log_metric("train_mae", train_mae)
             mlflow.log_metric("test_mae", test_mae)
+
+            mlflow.sklearn.log_model(model, artifact_path="model")
+
 
             # Save model
             model_path = MODELS_DIR / f"{model_name}_flight.pkl"
