@@ -16,17 +16,32 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Trip Details")
-    from_city = st.selectbox("From", ["DEL", "BOM", "BLR", "HYD", "COK"])
-    to_city = st.selectbox("To", ["BOM", "DEL", "BLR", "HYD", "COK"])
-    flight_type = st.selectbox("Class", ["economy", "premium_economy", "business"])
-    agency = st.selectbox("Airline", ["IndiGo", "AirIndia", "SpiceJet", "Vistara"])
+    from_city = st.selectbox("From", ["Aracaju (SE)",
+                                      "Brasilia (DF)",
+                                      "Campo Grande (MS)",
+                                      "Florianopolis (SC)",
+                                      "Natal (RN)",
+                                      "Recife (PE)",
+                                      "Rio de Janeiro",
+                                      "Salvador (BH)",
+                                      "Sao Paulo (SP)"])
+    to_city = st.selectbox("To", ["Aracaju (SE)",
+                                  "Brasilia (DF)",
+                                  "Campo Grande (MS)",
+                                  "Florianopolis (SC)",
+                                  "Natal (RN)",
+                                  "Recife (PE)",
+                                  "Rio de Janeiro",
+                                  "Salvador (BH)",
+                                  "Sao Paulo (SP)"])
+    flight_type = st.selectbox("Class", ["economic", "firstClass", "premium"])
+    agency = st.selectbox("Airline", ["CloudFy", "FlyingDrops", "Rainbow"])
 
 with col2:
     st.subheader("Flight Info")
-    distance = st.slider("Distance (km)", 500, 3000, 1500)
-    duration = st.slider("Duration (hours)", 1.0, 6.0, 2.5)
+    distance = st.slider("Distance (km)", 0, 1000, 500 )
+    duration = st.slider("Duration (hours)", 1.0, 3.0, 1.5)
     travel_date = st.date_input("Travel Date", value=pd.to_datetime("2026-01-15"))
-    age = st.slider("Traveler Age", 18, 70, 30)
 
 if st.button("🚀 Predict Price", type="primary"):
     # Prepare input
@@ -38,7 +53,6 @@ if st.button("🚀 Predict Price", type="primary"):
         "distance": distance,
         "time": duration,
         "date": str(travel_date),
-        "age": age,
     }
 
     with st.spinner("Predicting..."):
