@@ -1,0 +1,25 @@
+# Dockerfile.api - Flask REST API container
+
+# 1. Base image: Python 3.10 (slim = smaller size)
+FROM python:3.10-slim
+
+# 2. Set working directory inside container
+WORKDIR /app
+
+# 3. Copy requirements first (for caching)
+COPY requirements.txt .
+
+# 4. Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 5. Copy your code into container
+COPY src/ ./src/
+COPY api/ ./api/
+COPY models/ ./models/
+COPY data/ ./data/
+
+# 6. Expose port 5000 (Flask default)
+EXPOSE 5000
+
+# 7. Command to run when container starts
+CMD ["python", "api/app.py"]

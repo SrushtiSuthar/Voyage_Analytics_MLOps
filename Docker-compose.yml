@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # Flask API service
+  flask-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "5000:5000"           # host:container
+    volumes:
+      - ./models:/app/models  # sync models folder
+    environment:
+      - PYTHONPATH=/app
+
+  # Streamlit UI service
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    depends_on:
+      - flask-api             # start Flask first
+    environment:
+      - API_URL=http://flask-api:5000  # connect to Flask via container name

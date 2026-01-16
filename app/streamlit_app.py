@@ -2,6 +2,10 @@ import streamlit as st
 import requests
 import pandas as pd
 from pathlib import Path
+import os
+
+# Use environment variable or default to localhost
+API_URL = os.getenv("API_URL", "http://localhost:5000") + "/predict"
 
 st.set_page_config(page_title="Voyage Analytics", layout="wide")
 
