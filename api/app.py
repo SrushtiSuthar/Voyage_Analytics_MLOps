@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # Load production model
 MODELS_DIR = PROJECT_ROOT / "models"
-model_path = MODELS_DIR / "flight_price_production.pkl"  # or your best model
+model_path = MODELS_DIR / "random_forest_flight.pkl"  # or your best model
 model = joblib.load(model_path)
 print(f"Loaded model: {model_path}")
 
