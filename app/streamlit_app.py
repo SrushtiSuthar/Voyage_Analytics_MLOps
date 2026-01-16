@@ -5,7 +5,8 @@ from pathlib import Path
 import os
 
 # Use environment variable or default to localhost
-API_URL = os.getenv("API_URL", "http://localhost:5000") + "/predict"
+API_ROOT = os.getenv("API_URL", "http://localhost:5000")
+API_URL = API_ROOT.rstrip("/") + "/predict"
 
 st.set_page_config(page_title="Voyage Analytics", layout="wide")
 
