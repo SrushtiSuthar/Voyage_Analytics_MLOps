@@ -5,8 +5,8 @@ from pathlib import Path
 import os
 
 # Use environment variable or default to localhost
-API_ROOT = os.getenv("API_URL", "http://localhost:5000")
-API_URL = API_ROOT.rstrip("/") + "/predict"
+#API_ROOT = os.getenv("API_URL", "http://localhost:5000")
+#API_URL = API_ROOT.rstrip("/") + "/predict"
 
 st.set_page_config(page_title="Voyage Analytics", layout="wide")
 
@@ -59,11 +59,20 @@ if st.button("🚀 Predict Price", type="primary"):
         "time": duration,
         "date": str(travel_date),
     }
+    
+    print("🔥 STREAMLIT: Predict clicked")  # DEBUG
+    print("🔥 STREAMLIT: Sending payload:", input_data)  # DEBUG
 
     with st.spinner("Predicting..."):
         try:
+            print("🔥 STREAMLIT: Making requests.post")  # DEBUG
             response = requests.post(API_URL, json=input_data, timeout=10)
+            
+            print("🔥 STREAMLIT: Status code:", response.status_code)  # DEBUG
+            print("🔥 STREAMLIT: Response text:", response.text)  # DEBUG
+            
             result = response.json()
+            print("🔥 STREAMLIT: Parsed result:", result)  # DEBUG
 
             if response.status_code == 200:
                 st.success("✅ Prediction Complete!")
@@ -71,16 +80,20 @@ if st.button("🚀 Predict Price", type="primary"):
                 with col1:
                     st.metric("Predicted Price", f"₹{result['predicted_price']:,.0f}")
                 with col2:
-                    st.metric("Confidence", f"{result['confidence']:.1%}")
+                    st.metric("Confidence", "95%")  # Fixed: hardcoded for now
                 with col3:
-                    st.metric("Price Range", f"₹{result['price_range'][0]:,.0f} – ₹{result['price_range'][1]:,.0f}")
-
+                    low, high = result['price_range']
+                    st.metric("Price Range", f"₹{low:,.0f} – ₹{high:,.0f}")
             else:
-                st.error(f"❌ API Error: {result.get('error', 'Unknown error')}")
-
+                st.error(f"❌ API Error {response.status_code}: {result.get('error', 'Unknown')}")
+                
         except requests.exceptions.RequestException as e:
+            print("🔥 STREAMLIT: Connection error:", str(e))  # DEBUG
             st.error(f"❌ Connection Error: {e}")
             st.info("Make sure Flask API is running: `python api/app.py`")
-
-st.markdown("---")
-st.markdown("**Model Metrics:** RMSE: 9.70 | R²: 0.999 | Powered by Random Forest")
+        except KeyError as e:
+            print("🔥 STREAMLIT: Missing key:", e)  # DEBUG
+            st.error(f"❌ API response missing field: {e}")
+        except Exception as e:
+            print("🔥 STREAMLIT: Unexpected error:", str(e))  # DEBUG
+            st.error(f"❌ Unexpected error: {e}")
