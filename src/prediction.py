@@ -45,6 +45,8 @@ def predict_flight_price(
     # Load training feature columns
     feature_cols_path = FEATURE_DIR / "flights_features.pkl"
     X_train = joblib.load(feature_cols_path)
+    print("TRAIN columns:", len(X_train.columns))
+    print(X_train.columns.tolist()[:20])
     feature_cols = list(X_train.columns)
 
     # Align columns: add missing, drop extra
