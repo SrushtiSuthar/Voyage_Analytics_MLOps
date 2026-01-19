@@ -12,6 +12,8 @@ COPY app/ ./app/
 COPY models/ ./models/
 COPY data/ ./data/
 
+LABEL maintainer="you@domain.com"
+
 # Streamlit uses port 8501
 EXPOSE 8501
 

@@ -1,7 +1,7 @@
 # src/training.py
 from pathlib import Path
 from typing import Dict, Tuple
-
+import joblib
 import mlflow
 import pandas as pd
 import numpy as np
@@ -39,6 +39,9 @@ def train_flight_price_model(experiment_name: str = "voyage_flight_price") -> Di
                          drop_cols = ["travelcode", "usercode", "flighttype", "time", "distance", "date"]
                          )
     print(f"Feature matrix shape: {X.shape}, Target shape: {y.shape}")
+
+    encoders = joblib.load(_DIR / "flight_encoders.pkl")
+    scaler   = joblib.load(ARTIFACT_DIR / "flight_scaler.pkl")
 
     # save features
     save_features(X, name="flights")

@@ -7,7 +7,9 @@ st.set_page_config(page_title="Voyage Analytics", layout="wide")
 st.title("✈️ Voyage Analytics – Flight Price Prediction")
 st.markdown("**Production ML model** predicting flight prices using Random Forest.")
 
-API_URL = "http://localhost:5000/predict"
+import os
+API_URL = os.getenv("API_URL", "http://localhost:5000/predict")
+print(f"🔥 STREAMLIT STARTED - API_URL='{API_URL}'")
 
 # Input form
 col1, col2 = st.columns(2)

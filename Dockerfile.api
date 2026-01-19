@@ -18,6 +18,10 @@ COPY api/ ./api/
 COPY models/ ./models/
 COPY data/ ./data/
 
+LABEL maintainer="you@domain.com"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:5000/health || exit 1
+
 # 6. Expose port 5000 (Flask default)
 EXPOSE 5000
 
