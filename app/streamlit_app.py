@@ -44,7 +44,7 @@ if st.button("🚀 Predict Price", type="primary"):
 
     with st.spinner("🔄 Predicting... Check Flask terminal for debug info"):
         try:
-            response = requests.post(API_URL, json=input_data, timeout=10)
+            response = requests.post(API_URL, json=input_data, timeout=1000000)
             
             if response.status_code == 200:
                 result = response.json()
